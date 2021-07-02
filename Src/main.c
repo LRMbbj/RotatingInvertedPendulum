@@ -36,6 +36,17 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#ifdef USER_MAIN_DEBUG
+#define user_main_printf(format, ...) HostSendLog(LOG_COLOR_BLACK, format "\r\n", ##__VA_ARGS__)
+#define user_main_info(format, ...) HostSendLog(LOG_COLOR_BLACK, "[\tmain]info:" format "\r\n", ##__VA_ARGS__)
+#define user_main_debug(format, ...) HostSendLog(LOG_COLOR_GREEN, "[\tmain]debug:" format "\r\n", ##__VA_ARGS__)
+#define user_main_error(format, ...) HostSendLog(LOG_COLOR_RED, "[\tmain]error:" format "\r\n",##__VA_ARGS__)
+#else
+#define user_main_printf(format, ...)
+#define user_main_info(format, ...)
+#define user_main_debug(format, ...)
+#define user_main_error(format, ...)
+#endif
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -67,7 +78,10 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	int16_t i = 0;
+	int8_t delta = 10;
+	struct DataPack dt[1];
+	dt[0].type = DATA_TYPE_S16;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -94,7 +108,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-	MotorStatus(&motor0, MOTOR_)
+	MotorStatus(&motor0, MOTOR_STATUS_ACTIVE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,7 +116,15 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+		i += delta;
+		if(i>499 || i<-499) delta *= -1;
+		
+		MotorControl(&motor0, i);
+		
+		dt[0].val.i16 = i;
+		HostSendData(0xF1, &dt[0], 1);
+		
+		HAL_Delay(50);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

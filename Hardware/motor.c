@@ -1,5 +1,20 @@
 #include "motor.h"
 #include <math.h>
+#include "host.h"
+
+#define USER_ENCODER_DEBUG
+
+#ifdef USER_ENCODER_DEBUG
+#define user_encoder_printf(format, ...) HostSendLog(LOG_COLOR_BLACK, format "\r\n", ##__VA_ARGS__)
+#define user_encoder_info(format, ...) HostSendLog(LOG_COLOR_BLACK, "[\tencoder]info:" format "\r\n", ##__VA_ARGS__)
+#define user_encoder_debug(format, ...) HostSendLog(LOG_COLOR_GREEN, "[\tencoder]debug:" format "\r\n", ##__VA_ARGS__)
+#define user_encoder_error(format, ...) HostSendLog(LOG_COLOR_RED, "[\tencoder]error:" format "\r\n",##__VA_ARGS__)
+#else
+#define user_encoder_printf(format, ...)
+#define user_encoder_info(format, ...)
+#define user_encoder_debug(format, ...)
+#define user_encoder_error(format, ...)
+#endif
 
 const struct Motor motor0 = {&htim3, TIM_CHANNEL_2, 1000, GPIOC, GPIO_PIN_2, GPIO_PIN_3};
 

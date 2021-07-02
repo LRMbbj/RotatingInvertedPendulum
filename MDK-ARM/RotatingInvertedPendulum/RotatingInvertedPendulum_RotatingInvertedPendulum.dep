@@ -1,6 +1,6 @@
 Dependencies for Project 'RotatingInvertedPendulum', Target 'RotatingInvertedPendulum': (DO NOT MODIFY !)
 F (startup_stm32f407xx.s)(0x60DEDE8A)(--cpu Cortex-M4.fp -g --apcs=interwork --pd "__MICROLIB SETA 1"-I D:\CodeLibrary\RotatingInvertedPendulum\MDK-ARM\RTE-I D:\MDK5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include--pd "__UVISION_VERSION SETA 514" --pd "_RTE_ SETA 1"--list startup_stm32f407xx.lst --xref -o rotatinginvertedpendulum\startup_stm32f407xx.o --depend rotatinginvertedpendulum\startup_stm32f407xx.d)
-F (../Src/main.c)(0x60DEDF00)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I..\Hardware-I D:\CodeLibrary\RotatingInvertedPendulum\MDK-ARM\RTE-I D:\MDK5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o rotatinginvertedpendulum\main.o --omf_browse rotatinginvertedpendulum\main.crf --depend rotatinginvertedpendulum\main.d)
+F (../Src/main.c)(0x60DEE4A0)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I..\Hardware-I D:\CodeLibrary\RotatingInvertedPendulum\MDK-ARM\RTE-I D:\MDK5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o rotatinginvertedpendulum\main.o --omf_browse rotatinginvertedpendulum\main.crf --depend rotatinginvertedpendulum\main.d)
 I (../Inc/main.h)(0x60DEDE87)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x60B50B1B)
 I (../Inc/stm32f4xx_hal_conf.h)(0x60DEDE87)
@@ -797,7 +797,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x60B50B1B)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x60B50B1B)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x60B50B1B)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x60B50B1B)
-F (..\Hardware\motor.c)(0x60DEDB2F)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I..\Hardware-I D:\CodeLibrary\RotatingInvertedPendulum\MDK-ARM\RTE-I D:\MDK5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o rotatinginvertedpendulum\motor.o --omf_browse rotatinginvertedpendulum\motor.crf --depend rotatinginvertedpendulum\motor.d)
+F (..\Hardware\motor.c)(0x60DEE5D4)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I..\Hardware-I D:\CodeLibrary\RotatingInvertedPendulum\MDK-ARM\RTE-I D:\MDK5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I D:\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o rotatinginvertedpendulum\motor.o --omf_browse rotatinginvertedpendulum\motor.crf --depend rotatinginvertedpendulum\motor.d)
 I (..\Hardware\motor.h)(0x60DEDB2A)
 I (../Inc/tim.h)(0x60DEDE86)
 I (../Inc/main.h)(0x60DEDE87)
@@ -832,3 +832,4 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x60B50B1B)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x60B50B1B)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x60B50B1B)
 I (D:\MDK5\ARM\ARMCC\include\math.h)(0x5475F2FE)
+I (..\Hardware\host.h)(0x60DEC5B5)
