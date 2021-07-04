@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "host.h"
 #include "motor.h"
+#include "pid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +52,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+struct PIDCircle pidMotorPos;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -78,10 +79,14 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	int16_t i = 0;
-	int8_t delta = 10;
-	struct DataPack dt[1];
-	dt[0].type = DATA_TYPE_S16;
+	int16_t i = 5;
+	int8_t delta = 1;
+	struct DataPack dt[3];
+	dt[0].type = DATA_TYPE_S16; //Pos
+	dt[1].type = DATA_TYPE_S16; //tgt
+	dt[2].type = DATA_TYPE_S16; //PID out
+	
+	s16 motorPos;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,7 +95,15 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+	pidMotorPos.kp = 10;
+	pidMotorPos.ki = 0;
+	pidMotorPos.kd = 0;
+	pidMotorPos.tgt = 0;
+	pidMotorPos.i_band = 0;
+	pidMotorPos.i_limit = 0;
+	pidMotorPos.sum_limit = 100;
+	pidMotorPos.cur = &motorPos;
+	PIDReset(&pidMotorPos);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -116,16 +129,17 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-		i += delta;
-		if(i>499 || i<-499) delta *= -1;
+
+    /* USER CODE BEGIN 3 */
+		motorPos = __HAL_TIM_GET_COUNTER(&htim3) % 2400;
 		
-		MotorControl(&motor0, i);
+		MotorControl(&motor0, PIDUpdate(&pidMotorPos));
 		
 		dt[0].val.i16 = i;
-		HostSendData(0xF1, &dt[0], 1);
-		
-		HAL_Delay(50);
-    /* USER CODE BEGIN 3 */
+		dt[1].val.i16 = pidMotorPos.tgt;
+		dt[2].val.i16 = pidMotorPos.out;
+		HostSendData(0xF1, dt, 3);
+
   }
   /* USER CODE END 3 */
 }
