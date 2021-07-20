@@ -26,6 +26,7 @@
 "rotatinginvertedpendulum\host.o"
 "rotatinginvertedpendulum\encoder.o"
 "rotatinginvertedpendulum\motor.o"
+"rotatinginvertedpendulum\pid.o"
 --library_type=microlib --strict --scatter "RotatingInvertedPendulum\RotatingInvertedPendulum.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

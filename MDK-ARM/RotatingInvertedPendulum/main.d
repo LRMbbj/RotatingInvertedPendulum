@@ -36,3 +36,6 @@ rotatinginvertedpendulum\main.o: ../Inc/usart.h
 rotatinginvertedpendulum\main.o: ../Inc/gpio.h
 rotatinginvertedpendulum\main.o: ..\Hardware\host.h
 rotatinginvertedpendulum\main.o: ..\Hardware\motor.h
+rotatinginvertedpendulum\main.o: ..\Hardware\pid.h
+rotatinginvertedpendulum\main.o: D:\MDK5\ARM\ARMCC\Bin\..\include\math.h
+rotatinginvertedpendulum\main.o: ..\Hardware\encoder.h

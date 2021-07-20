@@ -6,9 +6,6 @@ SourceFiles=..\Src\main.c;..\Src\gpio.c;..\Src\tim.c;..\Src\usart.c;..\Src\stm32
 HeaderPath=..\Drivers\STM32F4xx_HAL_Driver\Inc;..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;..\Drivers\CMSIS\Device\ST\STM32F4xx\Include;..\Drivers\CMSIS\Include;..\Inc;
 CDefines=USE_HAL_DRIVER;STM32F407xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
-[PreviousGenFiles]
-HeaderPath=D:/CodeLibrary/RotatingInvertedPendulum/Inc
-HeaderFiles=gpio.h;tim.h;usart.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=D:/CodeLibrary/RotatingInvertedPendulum/Src
-SourceFiles=gpio.c;tim.c;usart.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
+[]
+SourceFiles=;;
 
