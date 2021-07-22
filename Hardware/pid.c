@@ -14,7 +14,7 @@
 #define user_pid_error(format, ...)
 #endif
 
-struct PIDCircle pidMotorPos, pidRotateAngle;
+struct PIDCircle pidBalance, pidStartRotating, pidMotorSpd;
 
 void PIDSetTarget(struct PIDCircle* pid, s16 target)
 {
@@ -35,31 +35,40 @@ s32 limit(s32 val, s32 tgt)
 
 s32 Normalize(s32 val, s32 max)
 {
-    return (val + max) % (max * 2) - max;
+    return (val + max * 5) % (max * 2) - max;
 }
 
 void PIDInit()
 {
-    // pidM
-    //输入参数为线数/100
-    pidMotorPos.kp = -5;
-    pidMotorPos.ki = 0;
-    pidMotorPos.kd = 0;
-    pidMotorPos.tgt = 50;
-    pidMotorPos.i_band = 10;
-    pidMotorPos.i_limit = 200;
-    pidMotorPos.sum_limit = 1000;
-    PIDReset(&pidMotorPos);
+    // pid 平衡环
+    pidBalance.kp = -10;//-10
+    pidBalance.ki = -1;
+    pidBalance.kd = -50;//-30
+    pidBalance.tgt = 0;
+    pidBalance.i_band = 50;
+    pidBalance.i_limit = 500;
+    pidBalance.sum_limit = 1000;
+    PIDReset(&pidBalance);
     
-    // pidR(未确定)
-//    pidRotateAngle.kp = -5;
-//    pidRotateAngle.ki = 0;
-//    pidRotateAngle.kd = 0;
-//    pidRotateAngle.tgt = 50;
-//    pidRotateAngle.i_band = 10;
-//    pidRotateAngle.i_limit = 200;
-//    pidRotateAngle.sum_limit = 1000;
-//    PIDReset(&pidRotateAngle);
+    // pid 起摆正反馈环
+    pidStartRotating.kp = 0;
+    pidStartRotating.ki = 0;
+    pidStartRotating.kd = -20;
+    pidStartRotating.tgt = 0;
+    pidStartRotating.i_band = 10;
+    pidStartRotating.i_limit = 100;
+    pidStartRotating.sum_limit = 300;
+    PIDReset(&pidStartRotating);
+    
+    // pid 电机速度环
+    pidMotorSpd.kp = 10;
+    pidMotorSpd.ki = 0;
+    pidMotorSpd.kd = 5;
+    pidMotorSpd.tgt = 0;
+    pidMotorSpd.i_band = 10;
+    pidMotorSpd.i_limit = 100;
+    pidMotorSpd.sum_limit = 1000;
+    PIDReset(&pidMotorSpd);
 }
 
 void PIDReset(struct PIDCircle* pid)

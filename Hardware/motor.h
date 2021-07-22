@@ -20,7 +20,7 @@ struct Motor
 
 extern const struct Motor motor0;
 
-void MotorStatus(const struct Motor *motor, u8 state); //¿ØÖÆµç»úÊÇ·ñ¼¤»î
-void MotorControl(const struct Motor *motor, int16_t val); //¿ØÖÆµç»ú¹¦ÂÊ
+void MotorStatus(const struct Motor *motor, u8 state); //æ§åˆ¶ç”µæœºæ˜¯å¦æ¿€æ´»
+void MotorControl(const struct Motor *motor, int16_t val); //æ§åˆ¶ç”µæœºåŠŸç‡
 
 #endif

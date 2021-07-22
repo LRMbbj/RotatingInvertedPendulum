@@ -16,7 +16,7 @@
 
 typedef uint8_t u8;
 
-union DataS
+union Data
 {
 	uint8_t ui8;
 	uint16_t ui16;
@@ -32,7 +32,7 @@ union DataL
 struct DataPack
 {
 	u8 type;
-	union DataS val;
+	union Data val;
 };
 
 void HostSend( u8 d_addr, u8 id, u8 len, u8 data[]);

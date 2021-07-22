@@ -39,7 +39,9 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-//#define USER_MAIN_DEBUG
+#define ENCODER1_K 10
+#define BALANCE_START 300
+
 
 #ifdef USER_MAIN_DEBUG
 #define user_main_printf(format, ...) HostSendLog(LOG_COLOR_BLACK, format "\r\n", ##__VA_ARGS__)
@@ -62,7 +64,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+s32 pendulumAngle = 0, motorSpd = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,6 +76,41 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void StartRotating()
+{
+    s32 out;
+    
+    struct DataPack dt[4];
+    dt[0].type = DATA_TYPE_S16;        //PID out MP
+    dt[1].type = DATA_TYPE_S16;        //pendulumAngle
+    
+    pidStartRotating.cur = &pendulumAngle;
+    pidStartRotating.maxE = encoder0.ppr;
+    
+    MotorControl(&motor0, 500);
+    
+    HAL_Delay(100);
+    
+    pendulumAngle = (EncoderGetValue(&encoder0) + 1200 * 5) % 2400 - 1200;
+    
+    while (pendulumAngle < 600 && pendulumAngle > -600)
+    {
+        pendulumAngle = (EncoderGetValue(&encoder0) + 1200 * 5) % 2400 - 1200;
+        out = PIDUpdate(&pidStartRotating);
+        
+        MotorControl(&motor0, out);
+        
+        dt[0].val.i16 = out;
+        dt[1].val.i16 = pendulumAngle;
+        
+        HostSendData(0xF1, dt, 2);
+        
+        HAL_Delay(10);
+    }
+    
+    MotorControl(&motor0, 0);
+    
+}
 /* USER CODE END 0 */
 
 /**
@@ -82,87 +119,111 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-    /* USER CODE BEGIN 1 */
-	
-    struct DataPack dt[3];
-    dt[0].type = DATA_TYPE_U16;  //Pos
-    dt[1].type = DATA_TYPE_S16;  //tgt
-    dt[2].type = DATA_TYPE_S16;  //PID out
-	
-    s32 motorPos, pendulumAngle;
-    /* USER CODE END 1 */
+  /* USER CODE BEGIN 1 */
 
-    /* MCU Configuration--------------------------------------------------------*/
+    
+  /* USER CODE END 1 */
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
-    /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
+    struct DataPack dt[3];
+    dt[0].type = DATA_TYPE_S16;        //PID out MP
+    dt[1].type = DATA_TYPE_S16;        //pendulumAngle
+    dt[2].type = DATA_TYPE_S16;        //Motor Speed
+    
+    s32 out;
 	
-    // pid初始化
-    PIDInit();
-    pidMotorPos.cur = &motorPos;
-    pidMotorPos.maxE = encoder1.ppr / 200;
-    pidRotateAngle.cur = &pendulumAngle;
-    pidRotateAngle.maxE = encoder0.ppr;
-	
-	
-    /* USER CODE END Init */
+  /* USER CODE END Init */
 
-    /* Configure the system clock */
-    SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-    /* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-    /* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-    /* Initialize all configured peripherals */
-    MX_GPIO_Init();
-    MX_TIM3_Init();
-    MX_TIM4_Init();
-    MX_TIM5_Init();
-    MX_USART1_UART_Init();
-    MX_USART2_UART_Init();
-    /* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  /* USER CODE BEGIN 2 */
     MotorStatus(&motor0, MOTOR_STATUS_ACTIVE);
+    EncoderInit(&encoder0);
     EncoderInit(&encoder1);
-	
-    MotorControl(&motor0, 1);
-    /* USER CODE END 2 */
+    PIDInit();
+    
+    pidBalance.cur = &pendulumAngle;
+    pidBalance.maxE = encoder0.ppr;
+    
+    pidMotorSpd.cur = &motorSpd;
+    pidMotorSpd.maxE = encoder1.ppr / ENCODER1_K;
+    
+    user_main_debug("MCU Running!");
+    
+    //StartRotating(); // Start Rotating
+    
+  /* USER CODE END 2 */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
     while (1)
     {
-        /* USER CODE END WHILE */
-
-        /* USER CODE BEGIN 3 */
-		
-        motorPos = EncoderGetValue(&encoder1) / 100;
-		
-        MotorControl(&motor0, PIDUpdate(&pidMotorPos));
-		
-        dt[0].val.ui16 = EncoderGetValue(&encoder1);  //电机位置
-		
-        dt[1].val.ui16 = pidMotorPos.tgt;
-        dt[2].val.i16 = pidMotorPos.out;
-        HostSendData(0xF1, dt, 3);
-        HAL_Delay(10);
-
-
-        //motorPos = EncoderGetValue(&encoder1);
-        //pendulumAngle = EncoderGetValue(&encoder0); //更新pid的测量值
-        //
-        //pidMotorPos.tgt = PIDUpdate(&pidRotateAngle);
-        //MotorControl(&motor0, PIDUpdate(&pidMotorPos));
-        //
-        //HostSendData(0xF1, dt, 3);
-		
-        //HAL_Delay(10);
+        MotorControl(&motor0, 0);
         
+        StartRotating();
         
+        pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+        
+//        while(pendulumAngle > BALANCE_START || pendulumAngle < -BALANCE_START)
+//        {
+//            pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+//            motorSpd = EncoderGetSpeed(&encoder1) / ENCODER1_K;
+//            
+//        
+//            dt[0].val.i16 = pendulumAngle;
+//            dt[1].val.i16 = motorSpd;
+//        
+//            HostSendData(0xF1, dt, 2);
+//        
+//            HAL_Delay(10);
+//        }
+        
+        while (pendulumAngle < BALANCE_START && pendulumAngle > -BALANCE_START)
+        {
+            dt[2].val.i16 = EncoderGetValue(&encoder1) / ENCODER1_K - motorSpd;
+
+            pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+            motorSpd = EncoderGetSpeed(&encoder1) / ENCODER1_K;
+            out = PIDUpdate(&pidBalance) + PIDUpdate(&pidMotorSpd) * 0 ;
+        
+            MotorControl(&motor0, out);
+        
+            dt[0].val.i16 = pendulumAngle;
+            dt[1].val.i16 = motorSpd;
+            dt[2].val.i16 = pidMotorSpd.out;
+
+        
+            HostSendData(0xF1, dt, 3);
+        
+            HAL_Delay(10);
+            
+
+        }
+    
+        user_main_debug("end Prog");
     }
-    /* USER CODE END 3 */
+  /* USER CODE END WHILE */
+        
+  /* USER CODE BEGIN 3 */
+        
+  /* USER CODE END 3 */
 }
 
 /**
@@ -171,41 +232,41 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-    /** Configure the main internal regulator output voltage
-    */
-    __HAL_RCC_PWR_CLK_ENABLE();
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-    /** Initializes the RCC Oscillators according to the specified parameters
-    * in the RCC_OscInitTypeDef structure.
-    */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    RCC_OscInitStruct.PLL.PLLM = 4;
-    RCC_OscInitStruct.PLL.PLLN = 84;
-    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 4;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    /** Initializes the CPU, AHB and APB buses clocks
-    */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-                                | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 84;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-    {
-        Error_Handler();
-    }
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -218,13 +279,13 @@ void SystemClock_Config(void)
   */
 void Error_Handler(void)
 {
-    /* USER CODE BEGIN Error_Handler_Debug */
+  /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
     while (1)
     {
     }
-    /* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -237,10 +298,10 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-    /* USER CODE BEGIN 6 */
+  /* USER CODE BEGIN 6 */
     /* User can add his own implementation to report the file name and line number,
        ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-     /* USER CODE END 6 */
+  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
 

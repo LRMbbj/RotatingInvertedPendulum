@@ -16,7 +16,7 @@
 #define user_encoder_error(format, ...)
 #endif
 
-const struct Motor motor0 = {&htim3, TIM_CHANNEL_2, 1000, GPIOC, GPIO_PIN_2, GPIO_PIN_3};
+const struct Motor motor0 = {&htim5, TIM_CHANNEL_2, 1000, GPIOC, GPIO_PIN_2, GPIO_PIN_3};
 
 void MotorStatus(const struct Motor *motor, u8 state)
 {

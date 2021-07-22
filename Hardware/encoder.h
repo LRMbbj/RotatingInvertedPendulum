@@ -4,6 +4,8 @@
 #include "tim.h"
 
 typedef uint16_t u16;
+typedef uint32_t u32;
+typedef int32_t s32;
 
 struct Encoder
 {
@@ -14,6 +16,7 @@ struct Encoder
 extern struct Encoder encoder0, encoder1;
 
 void EncoderInit(struct Encoder* ecd);
-u16 EncoderGetValue(struct Encoder* ecd);
+u32 EncoderGetValue(struct Encoder* ecd);
+s32 EncoderGetSpeed(struct Encoder* ecd);
 
 #endif

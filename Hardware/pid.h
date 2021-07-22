@@ -24,7 +24,7 @@ struct PIDCircle
 
 };
 
-extern struct PIDCircle pidMotorPos, pidRotateAngle;
+extern struct PIDCircle pidBalance, pidStartRotating, pidMotorSpd;
 extern int abs(int);
 
 void PIDSetTarget(struct PIDCircle* pid, s16 target);

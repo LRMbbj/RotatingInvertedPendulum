@@ -49,7 +49,7 @@ void HostSendLog(u8 color, const char* str)
 	sendBUF[cnt] = 0xAA;	sc += sendBUF[cnt++];	ac += sc;
 	sendBUF[cnt] = 0xFF;	sc += sendBUF[cnt++];	ac += sc;
 	sendBUF[cnt] = 0xA0;	sc += sendBUF[cnt++];	ac += sc;
-	cnt++; //Áô¿ÕlenÎ»
+	cnt++; //ç•™ç©ºlenä½
 	sendBUF[cnt++] = color;
 	
 	
@@ -80,8 +80,8 @@ void HostSendLogVal(const char* str, uint32_t val)
 	sendBUF[cnt] = 0xAA;	sc += sendBUF[cnt++];	ac += sc;
 	sendBUF[cnt] = 0xFF;	sc += sendBUF[cnt++];	ac += sc;
 	sendBUF[cnt] = 0xA1;	sc += sendBUF[cnt++];	ac += sc;
-	cnt++; //Áô¿ÕlenÎ»
-	sendBUF[cnt++] = *((char *)&val); //0# µÚ0Î»
+	cnt++; //ç•™ç©ºlenä½
+	sendBUF[cnt++] = *((char *)&val); //0# ç¬¬0ä½
 	sendBUF[cnt++] = *((char *)&val + 1); //1#
 	sendBUF[cnt++] = *((char *)&val + 2); //2#
 	sendBUF[cnt++] = *((char *)&val + 3); //3#
