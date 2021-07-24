@@ -177,8 +177,6 @@ int main(void)
     {
         MotorControl(&motor0, 0);
         
-        StartRotating();
-        
         pendulumAngle = EncoderGetValue(&encoder0) - 1200;
         
 //        while(pendulumAngle > BALANCE_START || pendulumAngle < -BALANCE_START)
