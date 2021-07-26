@@ -41,7 +41,9 @@
 
 #define ENCODER1_K 10
 #define BALANCE_START 300
+#define MOTOR_MAX_SPEED 2000
 
+#define USER_MAIN_DEBUG
 
 #ifdef USER_MAIN_DEBUG
 #define user_main_printf(format, ...) HostSendLog(LOG_COLOR_BLACK, format "\r\n", ##__VA_ARGS__)
@@ -177,35 +179,44 @@ int main(void)
     {
         MotorControl(&motor0, 0);
         
+        HAL_Delay(500);
+        
+        user_main_debug("waiting reset");
+
         pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+        motorSpd = EncoderGetSpeed(&encoder1);
         
-//        while(pendulumAngle > BALANCE_START || pendulumAngle < -BALANCE_START)
-//        {
-//            pendulumAngle = EncoderGetValue(&encoder0) - 1200;
-//            motorSpd = EncoderGetSpeed(&encoder1) / ENCODER1_K;
-//            
-//        
-//            dt[0].val.i16 = pendulumAngle;
-//            dt[1].val.i16 = motorSpd;
-//        
-//            HostSendData(0xF1, dt, 2);
-//        
-//            HAL_Delay(10);
-//        }
-        
-        while (pendulumAngle < BALANCE_START && pendulumAngle > -BALANCE_START)
+        while (pendulumAngle > BALANCE_START || pendulumAngle < -BALANCE_START || motorSpd > MOTOR_MAX_SPEED || motorSpd < -MOTOR_MAX_SPEED)
         {
-            dt[2].val.i16 = EncoderGetValue(&encoder1) / ENCODER1_K - motorSpd;
+            pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+            motorSpd = ( motorSpd * 5 + EncoderGetSpeed(&encoder1) ) / 6;
+        
+            dt[0].val.i16 = pendulumAngle;
+            dt[1].val.i16 = 0;
+            dt[2].val.i16 = motorSpd;
+        
+            //HostSendData(0xF1, dt, 3);
+        
+            HAL_Delay(10);
+        }
+        
+        user_main_debug("keep balance now");
+        
+        pendulumAngle = EncoderGetValue(&encoder0) - 1200;
+        motorSpd = EncoderGetSpeed(&encoder1);
+        
+        while (pendulumAngle < BALANCE_START && pendulumAngle > -BALANCE_START && motorSpd < MOTOR_MAX_SPEED && motorSpd > -MOTOR_MAX_SPEED)
+        {
 
             pendulumAngle = EncoderGetValue(&encoder0) - 1200;
-            motorSpd = EncoderGetSpeed(&encoder1) / ENCODER1_K;
-            out = PIDUpdate(&pidBalance) + PIDUpdate(&pidMotorSpd) * 0 ;
+            out = PIDUpdate(&pidBalance);
+            motorSpd = (motorSpd * 5 + EncoderGetSpeed(&encoder1)) / 6;
         
             MotorControl(&motor0, out);
         
             dt[0].val.i16 = pendulumAngle;
-            dt[1].val.i16 = motorSpd;
-            dt[2].val.i16 = pidMotorSpd.out;
+            dt[1].val.i16 = out;
+            dt[2].val.i16 = motorSpd;
 
         
             HostSendData(0xF1, dt, 3);
@@ -215,7 +226,7 @@ int main(void)
 
         }
     
-        user_main_debug("end Prog");
+        user_main_error("end Prog");
     }
   /* USER CODE END WHILE */
         

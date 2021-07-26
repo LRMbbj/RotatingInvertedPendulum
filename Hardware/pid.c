@@ -41,9 +41,9 @@ s32 Normalize(s32 val, s32 max)
 void PIDInit()
 {
     // pid 平衡环
-    pidBalance.kp = -10;//-10
+    pidBalance.kp = -10;
     pidBalance.ki = -1;
-    pidBalance.kd = -50;//-30
+    pidBalance.kd = -30;
     pidBalance.tgt = 0;
     pidBalance.i_band = 50;
     pidBalance.i_limit = 500;
